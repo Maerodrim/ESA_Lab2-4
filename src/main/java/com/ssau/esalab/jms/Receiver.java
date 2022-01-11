@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+import static com.ssau.esalab.utils.StringConst.*;
+
 @Component
 public class Receiver {
 
@@ -21,12 +23,25 @@ public class Receiver {
         this.eventService = eventService;
     }
 
-    @JmsListener(destination = "dataBaseWatchDoq")
-    public void receiveMassage(Event event){
-        eventService.save(event);
-        String massage= String.format("%s happend", event.getAction());
-        Email email=new Email(massage,"admin@gmail.com");
-        emailService.save(email);
+    @JmsListener(destination = receiverNameUpdate)
+    public void receiveMassageUpdate(Event event) {
+        receiveMassage(event);
     }
 
+    @JmsListener(destination = receiverNameInsert)
+    public void receiveMassageInsert(Event event) {
+        receiveMassage(event);
+    }
+
+    @JmsListener(destination = receiverNameDelete)
+    public void receiveMassageDelete(Event event) {
+        receiveMassage(event);
+    }
+
+    private void receiveMassage(Event event) {
+        eventService.save(event);
+        String massage = String.format("%s happend", event.getAction());
+        Email email = new Email(massage, "admin@gmail.com");
+        emailService.save(email);
+    }
 }
